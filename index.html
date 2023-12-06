@@ -15,7 +15,7 @@
   <body>
     <nav 
       class="navbar navbar-expand-lg"
-      :class="{'navbar-dark bg-dark': useDarkNavbar, 'navbar-light bg-light' : !useDarkNavbar}"
+      :class="navbarClasses"
     >
       <a class="navbar-brand" href="index.html">Navbar</a>
       <button
@@ -66,6 +66,16 @@
 
     <script>
       Vue.createApp({
+        computed: {
+          navbarClasses() {
+            return { 
+              'navbar-dark': this.useDarkNavbar,
+              'bg-dark': this.useDarkNavbar,
+              'navbar-light': !this.useDarkNavbar,
+              'bg-light': !this.useDarkNavbar 
+            }
+          }
+        },
         data() {
           return {
             activePage: 0,
