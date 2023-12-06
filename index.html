@@ -13,62 +13,20 @@
     />
   </head>
   <body>
-    <nav 
-      :class="[`navbar-${theme}`, `bg-${theme}`, 'navbar', 'navbar-expand-lg']"
-    >
-      <a class="navbar-brand" href="index.html">Navbar</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li
-            v-for="(page, index) in pages"
-            class="nav-item"
-            :key="index"
-          >
-            <a
-              class="nav-link"
-              :class="{active: activePage == index}"
-              v-bind:href="page.link.url"
-              v-bind:title="`This link goes to the ${page.link.text} page`"
-              @click.prevent="activePage = index" 
-              >{{ page.link.text }}
-            </a>
-            <!-- 
-              @click.prevent="activePage = index" is the equivalent of 
-              v-on:click.prevent="activePage = index" 
-              Where .prevent prevents the navigation to a different url upon click
-            -->
-          </li>
-        </div>
-        <form class="d-flex">
-          <button 
-            class="btn btn-primary"
-            @click.prevent="changeTheme()"
-            >Toggle color</button>
-        </form>
-      </ul>
-    </nav>
+    <navbar
+      :pages="pages"
+      :active-page="activePage"
+      :nav-link-click="(index) => activePage = index"
+      ></navbar>
     <page-viewer 
       :page="pages[activePage]"
     ></page-viewer>
-    
 
     <script>
       let app = Vue.createApp({
         data() {
           return {
             activePage: 0,
-            theme: "light",
             pages: [
               {
                 link: { text: "Home", url: "index.html" },
@@ -87,19 +45,76 @@
               },
             ],
           };
+        }
+      });
+      
+      app.component("navbar", {
+        props: ["pages", "activePage", "navLinkClick"],
+        template: `
+          <nav 
+            :class="[\`navbar-\${theme}\`, \`bg-\${theme}\`, 'navbar', 'navbar-expand-lg']"
+          >
+            <a class="navbar-brand" href="index.html">Navbar</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li
+                  v-for="(page, index) in pages"
+                  class="nav-item"
+                  :key="index"
+                >
+                  <a
+                    class="nav-link"
+                    :class="{active: activePage == index}"
+                    v-bind:href="page.link.url"
+                    v-bind:title="\`This link goes to the \${page.link.text} page\`"
+                    @click.prevent="navLinkClick(index)" 
+                    >{{ page.link.text }}
+                  </a>
+                  <!-- 
+                    @click.prevent="activePage = index" is the equivalent of 
+                    v-on:click.prevent="activePage = index" 
+                    Where .prevent prevents the navigation to a different url upon click
+                  -->
+                </li>
+              </div>
+              <form class="d-flex">
+                <button 
+                  class="btn btn-primary"
+                  @click.prevent="changeTheme()"
+                  >Toggle color</button>
+              </form>
+            </ul>
+          </nav>
+        `,
+        data() {
+          return {
+            theme: "light"
+          };
         },
         methods: {
           changeTheme() {
             let theme = "light";
 
-            if(this.theme == "light"){
+            if (this.theme == "light") {
               theme = "dark";
             }
 
             this.theme = theme;
           }
         }
-      });
+
+      })
       
       app.component("page-viewer", {
         props: ["page"],
